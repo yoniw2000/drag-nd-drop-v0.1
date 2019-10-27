@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+        <title>DRAG AND DROP v0.1</title>
+    <link rel="stylesheet" type="text/css" href="drag_and_drop.css">
+
+    </head>
+
+    <body>
+        
+        <script src="https://kit.fontawesome.com/717009c62e.js" crossorigin="anonymous"></script>
+
+        <section class="icons">
+            <!-- draggable="true" גורם לזה להיות ליטרלי -->    
+            <i class="fas fa-hiking hiking icon" draggable="true" style="color: #ff6384;" id="hiking"></i>
+            <i class="fas fa-running running icon" draggable="true" style="color: #36a2eb;" id="running"></i>
+            <i class="fas fa-skiing skiing icon" draggable="true" style="color: #ffce56;" id="skiing"></i>
+            <i class="fas fa-biking biking icon" draggable="true" style="color: #9966ff;" id="biking"></i>
+            <i class="fas fa-swimmer swimmer icon" draggable="true" style="color: #4bc0c0;" id="swimmer"></i>
+            <i class="fas fa-skating skating icon" draggable="true" style="color: #333333;" id="skating"></i>
+            <i class="fas fa-walking walking icon" draggable="true" style="color: #ff9f40;" id="walking"></i>
+            <i class="fas fa-snowboarding snowboarding icon" draggable="true" style="color: #ff99cc;" id="snowboarding"></i>
+        </section>
+
+        <section class="boxes">
+            <div class="box" id="swimmer_box"><span class="lable" id="swimmer_lable">swimming</span></div>
+            <div class="box" id="skiing_box"><span class="lable" id="skiing_lable">skiing</span></div>
+            <div class="box" id="hiking_box"><span class="lable" id="hiking_lable">hiking</span></div>
+            <div class="box" id="biking_box"><span class="lable" id="biking_lable">biking</span></div>
+            <div class="box" id="running_box"><span class="lable" id="running_lable">running</span></div>
+            <div class="box" id="snowboarding_box"><span class="lable" id="snowboarding_lable">snowboarding</span></div>
+            <div class="box" id="skating_box"><span class="lable" id="skating_lable">skating</span></div>
+            <div class="box" id="walking_box"><span class="lable" id="walking_lable">walking</span></div>
+        </section>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+        <script>
+            const ICONS = document.querySelectorAll(".icon");
+            const BOXES = document.querySelectorAll(".box");
+            const LABLES = document.querySelectorAll(".lable");
+            var count = 0;
+            ICONS.forEach(E => {
+                E.addEventListener("dragstart", dragStart); // Fires as soon as the user starts dragging an item - This is where we can define the drag data
+                // elem.addEventListener("drag", drag); // Fires when a dragged item (element or text selection) is dragged
+                // elem.addEventListener("dragend", dragEnd); // Fires when a drag operation ends (such as releasing a mouse button or hitting the Esc key) - After the dragend event, the drag and drop operation is complete
+            });
+
+            BOXES.forEach(elem => {
+                //elem.addEventListener("dragenter", dragEnter); // Fires when a dragged item enters a valid drop target
+                elem.addEventListener("dragover", dragOver); // Fires when a dragged item is being dragged over a valid drop target, repeatedly while the draggable item is within the drop zone
+                //elem.addEventListener("dragleave", dragLeave); // Fires when a dragged item leaves a valid drop target
+                elem.addEventListener("drop", drop); // Fires when an item is dropped on a valid drop target
+            });
+
+            LABLES.forEach(elem => {
+                //elem.addEventListener("dragenter", dragEnter); // Fires when a dragged item enters a valid drop target
+                elem.addEventListener("dragover", dragOver); // Fires when a dragged item is being dragged over a valid drop target, repeatedly while the draggable item is within the drop zone
+                //elem.addEventListener("dragleave", dragLeave); // Fires when a dragged item leaves a valid drop target
+                elem.addEventListener("drop", drop); // Fires when an item is dropped on a valid drop target
+            });
+
+
+            function dragOver() {
+
+                if (!event.target.classList.contains("dropped")) {
+                    event.preventDefault(); // Prevent default to allow drop
+                }
+
+            }
+
+            var box_target;
+            function drop(event) {
+                var draggableElementData = event.dataTransfer.getData("text");
+                box_target = event.target.id;
+                check_valid_move()
+            }
+
+            var icon_target;
+            var icon_color;
+            function dragStart(event) {
+                icon_target = event.target.id
+                icon_color = event.target.style.color;
+            }
+            
+
+            function check_valid_move() {
+                if (icon_target + "_box" == box_target) {
+                    document.getElementById(box_target).style.backgroundColor = icon_color
+                    document.getElementById(icon_target).setAttribute("class", "unsee");
+                    // document.getElementById(box_target).setAttribute("class", "fas fa-hiking");
+                    //document.getElementById(box_target).setAttribute("class", "box_and_icon_touch");
+                    //document.getElementsByTagName(icon_target).createAttribute("class", "box_and_icon_touch" );   // Get the first <h1> element in the document
+                    count += 1
+                }
+                if (icon_target + "_lable" == box_target) {     //if lable touch
+                    let animalname = event.target.id
+                    //alert(ah)
+                    var oah = animalname.substr(0, animalname.length - 6)
+                     
+                    oah = oah + "_box"
+                    //alert(oah)
+                    document.getElementById(oah).style.backgroundColor = icon_color
+                    document.getElementById(icon_target).setAttribute("class", "unsee");
+                    count += 1;
+                    
+                    
+                }
+                if (checkwin()) {
+                    win()
+                }
+            }
+
+            function checkwin() {
+                let stop = 0;
+                var boxess = ["swimmer_box", "skiing_box", "hiking_box" , "biking_box" , "running_box" , "snowboarding_box" , "skating_box" , "walking_box"   ];
+                boxess.forEach(myFunction);
+
+                function myFunction(item) {
+                    if (document.getElementById(item).style.backgroundColor == "") {
+                        stop = 1;
+                    } 
+                }
+                if (stop == 0) {
+                    win();
+                }
+            }
+            function win() {
+                Swal.fire({
+                    imageUrl: 'https://images-na.ssl-images-amazon.com/images/I/51zLZbEVSTL._SX466_.jpg',
+                    imageWidth: 400,
+                    imageHeight: 400,
+                    imageAlt: 'Custom image',
+                    title: 'good job!',
+                    animation: true,
+                    customClass: {
+                        popup: 'animated tada'
+                    }
+                })
+            }
+
+        </script>
+
+
+    </body>
+</html>
+
